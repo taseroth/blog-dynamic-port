@@ -1,7 +1,6 @@
 package org.faboo.blog.dynamicport.service;
 
 import com.icegreen.greenmail.util.GreenMail;
-import com.icegreen.greenmail.util.Retriever;
 import com.icegreen.greenmail.util.ServerSetup;
 import org.junit.After;
 import org.junit.Assert;
@@ -11,7 +10,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.util.SocketUtils;
 
 import javax.mail.Message;
 
@@ -19,6 +23,7 @@ import static com.icegreen.greenmail.util.ServerSetup.PROTOCOL_SMTP;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ContextConfiguration(initializers = { SomeServiceTest.RandomPortInitializer.class})
 public class SomeServiceTest {
 
     @Value("${smtp.port}")
@@ -61,5 +66,17 @@ public class SomeServiceTest {
         Message[] receivedMessages = smtpServer.getReceivedMessages();
         Assert.assertEquals("only one email should be send", 1, receivedMessages.length);
         // test other aspects of the message ...
+    }
+
+    public static class RandomPortInitializer
+            implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(ConfigurableApplicationContext applicationContext) {
+
+            int randomPort = SocketUtils.findAvailableTcpPort();
+            TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext,
+                    "smtp.port=" + randomPort);
+        }
     }
 }
