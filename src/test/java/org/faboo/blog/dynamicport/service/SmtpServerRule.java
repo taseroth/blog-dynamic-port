@@ -23,7 +23,6 @@ import static com.icegreen.greenmail.util.ServerSetup.PROTOCOL_SMTP;
  * components.
  */
 @Component
-@ContextConfiguration(initializers = { SmtpServerRule.RandomPortInitializer.class})
 public class SmtpServerRule extends ExternalResource {
 
     private static final Logger log = LoggerFactory.getLogger(SmtpServerRule.class);

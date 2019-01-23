@@ -6,13 +6,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.Message;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-
+@ContextConfiguration(initializers = {SmtpServerRule.RandomPortInitializer.class})
 public class SomeServiceTest {
 
     @Autowired
@@ -20,7 +21,7 @@ public class SomeServiceTest {
 
     @Autowired
     @Rule
-    public SmtpServerRule smtpServerRule = new SmtpServerRule();
+    public SmtpServerRule smtpServerRule;
 
     @Test
     public void emailShouldBeSend() {
@@ -37,5 +38,4 @@ public class SomeServiceTest {
         Assert.assertEquals("only one email should be send", 1, receivedMessages.length);
         // test other aspects of the message ...
     }
-
 }
